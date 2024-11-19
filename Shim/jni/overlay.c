@@ -104,6 +104,7 @@ bool HSLoadFromOverlay(const char *path, void **buffer, size_t *length) {
 	 */
 	
 	if (!gZip) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "Overlay is not mounted");
 		return false;
 	}
 	
@@ -111,6 +112,7 @@ bool HSLoadFromOverlay(const char *path, void **buffer, size_t *length) {
 	void *data = mz_zip_reader_extract_file_to_heap(gZip, path, &size, 0);
 	
 	if (!data) {
+		__android_log_print(ANDROID_LOG_ERROR, TAG, "mz error: %s", mz_zip_get_error_string(mz_zip_get_last_error(gZip)));
 		return false;
 	}
 	else {
