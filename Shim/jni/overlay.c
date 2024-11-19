@@ -14,13 +14,13 @@
 #include "util.h"
 #include "smashhit.h"
 
-void (*ResMan_load)(ResMan *this, QiString *path, QiOutputStream *output);
+unsigned char (*ResMan_load)(ResMan *this, QiString *path, QiOutputStream *output);
 void (*QiOutputStream_writeBuffer)(QiOutputStream *this, void *buffer, size_t length);
 
-void HSResMan_load(ResMan *this, QiString *path, QiOutputStream *output) {
+unsigned char HSResMan_load(ResMan *this, QiString *path, QiOutputStream *output) {
 	__android_log_print(ANDROID_LOG_INFO, TAG, "HSResMan_load %s", path->data ? path->data : path->cached);
 	
-	ResMan_load(this, path, output);
+	return ResMan_load(this, path, output);
 }
 
 void HSOverlayInit(struct android_app *app, Leaf *leaf) {
