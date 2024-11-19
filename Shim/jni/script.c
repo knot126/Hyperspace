@@ -15,6 +15,7 @@ char *gAndroidInternalDataPath;
 
 // Lua libs
 int HSEnableLog(lua_State *script);
+int HSEnableHttp(lua_State *script);
 int knEnableRegistry(lua_State *script);
 
 void (*real_script_load_func)(Script *this, QiString *path);
@@ -23,6 +24,7 @@ static void script_load_hook(Script *this, QiString *path) {
 	real_script_load_func(this, path);
 	
 	HSEnableLog(*this->script->state);
+	HSEnableHttp(*this->script->state);
 	
 	knEnableRegistry(*this->script->state);
 }
