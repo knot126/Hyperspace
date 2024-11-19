@@ -24,10 +24,12 @@ Leaf *gLeaf;
 typedef void (*AndroidMainFunc)(struct android_app *app);
 
 void HSScriptInit(struct android_app *app, Leaf *leaf);
+void HSOverlayInit(struct android_app *app, Leaf *leaf);
 
 ModuleInitFunc gModuleInitFuncs[] = {
 	KNHookInit,
 	HSScriptInit,
+	HSOverlayInit,
 	NULL,
 };
 

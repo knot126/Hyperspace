@@ -26,6 +26,14 @@ typedef struct Script {
 	// incomplete
 } Script;
 
+typedef struct ResMan {
+	// unknown contents
+} ResMan;
+
+typedef struct QiOutputStream {
+	// unknown contents
+} QiOutputStream;
+
 #if defined(__ARM_ARCH_7A__)
 
 typedef struct Player {

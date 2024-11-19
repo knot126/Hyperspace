@@ -213,7 +213,7 @@ int knRegCount(lua_State *script) {
     return 1;
 }
 
-int knEnableRegistry(lua_State *script) {
+int HSEnableRegistry(lua_State *script) {
     lua_register(script, "knRegSet", knRegSet);
     lua_register(script, "knRegGet", knRegGet);
     lua_register(script, "knRegHas", knRegHas);
