@@ -23,6 +23,24 @@ waitMgr = {
 	end
 }
 
+errorPopup = {
+	showing = false,
+	message = "",
+	show = function (self, message)
+		self.showing = true
+		self.message = message
+	end,
+	hide = function (self)
+		self.showing = false
+	end,
+	draw = function (self)
+		if self.showing then
+			mgFullScreenColor(0, 0, 0, 0.3)
+			mgDraw(errorUi)
+		end
+	end
+}
+
 function startsWith(str,start)
    return string.sub(str,1,string.len(start))==start
 end
@@ -92,6 +110,11 @@ function load()
 	mgSetOrigo(levelListUi, "center")
 	mgSetScale(levelListUi, 1, 1)
 	mgSetPos(levelListUi, centerX, centerY)
+	
+	errorUi = mgCreateUi("error.xml")
+	mgSetOrigo(errorUi, "center")
+	mgSetScale(errorUi, 1, 1)
+	mgSetPos(errorUi, centerX, centerY)
 end
 
 function drawLoading()
@@ -195,6 +218,8 @@ function drawWorld2()
 	if type == "levellist" then
 		mgDraw(levelListUi)
 	end
+	
+	errorPopup:draw()
 end
 
 function drawWorld()
@@ -209,6 +234,8 @@ function startLevelListRequest()
 	LevelListRequest = HSHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/featured?format=lua")
 	if LevelListRequest then
 		waitMgr:start("Getting featured levels...")
+	else
+		errorPopup:show("Failed to create connection")
 	end
 end
 
@@ -223,6 +250,7 @@ function updateLevelListRequest()
 			HSHttpRelease(LevelListRequest)
 			LevelListRequest = nil
 		elseif status == HS_HTTP_ERROR then
+			errorPopup:show("Failed to get level list")
 			waitMgr:stop()
 			HSHttpRelease(LevelListRequest)
 			LevelListRequest = nil
@@ -262,7 +290,7 @@ function updateLevelRequest()
 			local data = HSHttpData(LevelRequest)
 			HSWriteFile(path, data)
 			
-			HSLog(HS_LOG_ERROR, "Wrote " .. path)
+			HSLog(HS_LOG_INFO, "Wrote " .. path)
 			
 			HSHttpRelease(LevelRequest)
 			LevelRequest = nil
@@ -270,11 +298,12 @@ function updateLevelRequest()
 			HSOverlayUnmount()
 			HSOverlayMount(path)
 			
-			HSLog(HS_LOG_ERROR, "Mounted " .. path)
+			HSLog(HS_LOG_INFO, "Mounted " .. path)
 			
 			mgCommand("level.start level:basic")
 		elseif status == HS_HTTP_ERROR then
-			HSLog(HS_LOG_ERROR, "Failed to request level")
+-- 			HSLog(HS_LOG_ERROR, "Failed to request level")
+			errorPopup:show("Failed to request level")
 			HSHttpRelease(LevelRequest)
 			LevelRequest = nil
 			waitMgr:stop()
@@ -285,6 +314,10 @@ end
 function handleCommand(cmd)
 	if cmd == "load" then
 		load()
+	end
+	
+	if cmd == "closeError" then
+		errorPopup:hide()
 	end
 	
 	if cmd == "showoptions" then
@@ -323,9 +356,11 @@ function MenuStack()
 			self.items[#self.items] = nil
 		end,
 		getState = function (self)
+			if #self.items == 0 then return end
 			return self.items[#self.items].state
 		end,
 		getType = function (self)
+			if #self.items == 0 then return end
 			return self.items[#self.items].type
 		end
 	}

@@ -1,0 +1,5 @@
+<!-- Auto generated from error.svg -->
+<ui texture="error.png" shade="true">
+	<rect coords="260 430 440 490" cmd="closeError"/>
+	<outside cmd="script:hideerror"/>
+</ui>
