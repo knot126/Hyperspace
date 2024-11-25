@@ -70,6 +70,8 @@ function initGlobals()
 	centerX = (left+right)*0.5
 	centerY = (top+bottom)*0.5
 	uiScale = tonumber(mgGet("game.uiscale"))
+	screenWidth = right - left
+	screenHeight = bottom - top
 end
 
 function init()
@@ -77,7 +79,7 @@ function init()
 	
 	loadingBar = mgCreateImage("LoadingBar.png")
 	mgSetOrigo(loadingBar, "topleft")
-	mgSetPos(loadingBar, left, top)
+	mgSetPos(loadingBar, left + (0.333 * screenWidth), top)
 end
 
 function load()
@@ -113,8 +115,10 @@ function load()
 	
 	errorUi = mgCreateUi("error.xml")
 	mgSetOrigo(errorUi, "center")
-	mgSetScale(errorUi, 1, 1)
+	mgSetScale(errorUi, 1.5, 1.5)
 	mgSetPos(errorUi, centerX, centerY)
+	
+	startLevelListRequest()
 end
 
 function drawLoading()
@@ -123,7 +127,7 @@ function drawLoading()
 	loadingFrame = loadingFrame + 1
 	
 	mgFullScreenColor(0, 0, 0, 1)
-	mgSetScale(loadingBar, (loadingFrame / 110 / 256) * (right - left), 1)
+	mgSetScale(loadingBar, (loadingFrame / 110 / 256) * (right - left) * (1/3), 1)
 	mgDraw(loadingBar)
 	
 	if loadingFrame == 110 then
@@ -150,7 +154,8 @@ function drawWorld2()
 	
 	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
 	
-	pcall(updateLevelRequest)
+	updateLevelRequest()
+	updateLevelListRequest()
 	
 	t = mgGet("game.menutransition")
 	t = (t-0.5)*2

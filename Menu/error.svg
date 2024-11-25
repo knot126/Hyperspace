@@ -335,7 +335,7 @@
        x="260"
        y="430"
        ry="30"
-       shcmd="closeError" />
+       shcmd="script:closeError" />
     <text
        xml:space="preserve"
        style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#ffffff;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
