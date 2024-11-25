@@ -56,13 +56,17 @@ end
 
 function init()
 	initGlobals()
+	
+	loadingBar = mgCreateImage("LoadingBar.png")
+	mgSetOrigo(loadingBar, "topleft")
+	mgSetPos(loadingBar, left, top)
 end
 
 function load()
 	optionsButton = mgCreateUi("optionsbutton.xml")
-	mgSetOrigo(optionsButton, "bottomright")
+	mgSetOrigo(optionsButton, "center")
 	mgSetScale(optionsButton, .75, .75)
-	mgSetPos(optionsButton, right-360, bottom-55)
+	mgSetPos(optionsButton, centerX, bottom-95)
 
 	optionsCanvas = mgCreateCanvas(1,1)
 	mgSetPos(optionsCanvas, centerX, centerY)
@@ -78,17 +82,26 @@ function load()
 	
 	optionsSnd = mgCreateImage("toggle_sound.png")
 	
-	waitImg = mgCreateImage("wait.png")
-	mgSetScale(waitImg, 2, 2)
+	waitImg = mgCreateImage("Wait.png")
+	mgSetScale(waitImg, 1, 1)
 	mgSetOrigo(waitImg, "center")
 	mgSetPos(waitImg, centerX, centerY)
 	waitAngle = 0
+	
+	levelListUi = mgCreateUi("levellistui.xml")
+	mgSetOrigo(levelListUi, "center")
+	mgSetScale(levelListUi, 1, 1)
+	mgSetPos(levelListUi, centerX, centerY)
 end
 
 function drawLoading()
 -- 	initGlobals() -- not needed maybe??
 	
 	loadingFrame = loadingFrame + 1
+	
+	mgFullScreenColor(0, 0, 0, 1)
+	mgSetScale(loadingBar, (loadingFrame / 110 / 256) * (right - left), 1)
+	mgDraw(loadingBar)
 	
 	if loadingFrame == 110 then
 		mgCommand("audio.playBackgroundMusic music/menu.ogg")
@@ -106,19 +119,21 @@ function frame()
 	end
 end
 
-function drawWorld()
+function drawWorld2()
 	if mgGet("game.loaded")=="0" then
 		drawLoading()
 		return
 	end
 	
-	updateLevelRequest()
+	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
+	
+	pcall(updateLevelRequest)
 	
 	t = mgGet("game.menutransition")
 	t = (t-0.5)*2
 	if t < 0 then t = 0 end
 	
-	mgSetAlpha(optionsButton, t)
+	mgSetAlpha(optionsButton, 1)
 	mgDraw(optionsButton)
 	
 	local optAlpha = mgGetAlpha(optionsCanvas)
@@ -172,6 +187,21 @@ function drawWorld()
 		waitAngle = waitAngle - 0.1
 		mgSetRot(waitImg, waitAngle)
 		mgDraw(waitImg)
+	end
+	
+	local type = menuStack:getType()
+	local state = menuStack:getState()
+	
+	if type == "levellist" then
+		mgDraw(levelListUi)
+	end
+end
+
+function drawWorld()
+	local status, msg = pcall(drawWorld2)
+	
+	if not status then
+		HSLog(HS_LOG_ERROR, msg)
 	end
 end
 
@@ -253,6 +283,10 @@ function updateLevelRequest()
 end
 
 function handleCommand(cmd)
+	if cmd == "load" then
+		load()
+	end
+	
 	if cmd == "showoptions" then
 		mgSetUiModal(optionsUi, true)
 		mgSetAlpha(optionsCanvas, 0)
@@ -284,13 +318,13 @@ function MenuStack()
 				type = t,
 				state = state,
 			}
-		end
+		end,
 		pop = function (self)
 			self.items[#self.items] = nil
-		end
+		end,
 		getState = function (self)
 			return self.items[#self.items].state
-		end
+		end,
 		getType = function (self)
 			return self.items[#self.items].type
 		end
