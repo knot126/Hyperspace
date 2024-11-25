@@ -236,7 +236,7 @@ function drawWorld()
 end
 
 function startLevelListRequest()
-	LevelListRequest = HSHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/featured?format=lua")
+	LevelListRequest = HSHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/featured?format=binary")
 	if LevelListRequest then
 		waitMgr:start("Getting featured levels...")
 	else
@@ -249,7 +249,7 @@ function updateLevelListRequest()
 		local status = HSHttpUpdate(LevelListRequest)
 		
 		if status == HS_HTTP_DONE then
-			pushNewLevelMenu("Featured levels", parseLevelList(HSHttpData(LevelListRequest)))
+			pushNewLevelMenu("Featured levels", decodeBinary(HSHttpData(LevelListRequest)))
 			
 			waitMgr:stop()
 			HSHttpRelease(LevelListRequest)
@@ -263,9 +263,35 @@ function updateLevelListRequest()
 	end
 end
 
-function parseLevelList(string)
-	-- TODO
-	return {}
+function decodeBinary(string)
+	local list = {}
+	
+	-- split by nulls
+	for item in string.gmatch(string, "([^%z]+)") do
+		list[#list + 1] = item
+	end
+	
+	-- keys
+	local keys = {}
+	
+	for _, item in ipairs(list) do
+		if item == "*END*" then break end
+		keys[#keys + 1] = item
+	end
+	
+	-- values
+	local objCount = (#list - #keys - 1) / #keys
+	local values = {}
+	
+	for i = 1, objCount do
+		values[i] = {}
+		
+		for j = 1, #keys do
+			values[i][keys[j]] = list[(i * #keys + 1) + j]
+		end
+	end
+	
+	return values
 end
 
 function pushNewLevelMenu(title, levels)
