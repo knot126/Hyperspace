@@ -1,0 +1,300 @@
+MODE_TRAINING = 0
+MODE_CLASSIC = 1
+MODE_EXPERT = 2
+MODE_ZEN = 3
+MODE_VERSUS = 4
+MODE_COOP = 5
+MODE_COUNT = 6
+
+HOSTNAME = "192.168.1.128:5000"
+
+waiting = false
+waitingReason = ""
+loadingFrame = 0
+
+waitMgr = {
+	start = function (self, reason)
+		waiting = true
+		waitingReason = reason
+	end,
+	stop = function (self)
+		waiting = false
+		waitingReason = ""
+	end
+}
+
+function startsWith(str,start)
+   return string.sub(str,1,string.len(start))==start
+end
+
+function getFirst(str)
+	i = string.find(str, " ")
+	if i > 0 then
+		return string.sub(str, 1, i-1)
+	end
+	return ""
+end
+
+function getSecond(str)
+	i = string.find(str, " ")
+	if i > 0 then
+		i = i + 1
+		return string.sub(str, i, string.len(str))
+	end
+	return ""
+end
+
+function initGlobals()
+	top = tonumber(mgGet("display.visibleTop"))
+	left = tonumber(mgGet("display.visibleLeft"))
+	right = tonumber(mgGet("display.visibleRight"))
+	bottom = tonumber(mgGet("display.visibleBottom"))
+	centerX = (left+right)*0.5
+	centerY = (top+bottom)*0.5
+	uiScale = tonumber(mgGet("game.uiscale"))
+end
+
+function init()
+	initGlobals()
+end
+
+function load()
+	optionsButton = mgCreateUi("optionsbutton.xml")
+	mgSetOrigo(optionsButton, "bottomright")
+	mgSetScale(optionsButton, .75, .75)
+	mgSetPos(optionsButton, right-360, bottom-55)
+
+	optionsCanvas = mgCreateCanvas(1,1)
+	mgSetPos(optionsCanvas, centerX, centerY)
+	mgSetScale(optionsCanvas, .5, .5)
+	mgSetAlpha(optionsCanvas, 0)
+	
+	optionsUi = mgCreateUi("options.xml")
+	mgSetOrigo(optionsUi, "center")
+	mgSetPos(optionsUi, 0, 0)
+	
+	optionsGfx = mgCreateImage("toggle_graphics.png")
+	mgSetPos(optionsGfx, 0, 15)
+	
+	optionsSnd = mgCreateImage("toggle_sound.png")
+	
+	waitImg = mgCreateImage("wait.png")
+	mgSetScale(waitImg, 2, 2)
+	mgSetOrigo(waitImg, "center")
+	mgSetPos(waitImg, centerX, centerY)
+	waitAngle = 0
+end
+
+function drawLoading()
+-- 	initGlobals() -- not needed maybe??
+	
+	loadingFrame = loadingFrame + 1
+	
+	if loadingFrame == 110 then
+		mgCommand("audio.playBackgroundMusic music/menu.ogg")
+	end
+end
+
+function frame()
+	if mgGet("game.loaded")=="0" then
+		for i=1, 8 do
+			if loadingFrame==i*10 then 
+				mgCommand("game.load")
+			end
+		end
+		return
+	end
+end
+
+function drawWorld()
+	if mgGet("game.loaded")=="0" then
+		drawLoading()
+		return
+	end
+	
+	updateLevelRequest()
+	
+	t = mgGet("game.menutransition")
+	t = (t-0.5)*2
+	if t < 0 then t = 0 end
+	
+	mgSetAlpha(optionsButton, t)
+	mgDraw(optionsButton)
+	
+	local optAlpha = mgGetAlpha(optionsCanvas)
+	if optAlpha > 0 then
+		mgFullScreenColor(0,0,0,optAlpha*0.5)
+		mgPushCanvas(optionsCanvas)
+		mgDraw(optionsUi)
+		local gfx = mgGet("game.graphics")
+		if gfx == "low" then
+			 mgSetCrop(optionsGfx, 0, 0, 512, 128)
+		elseif gfx == "medium" then 
+			mgSetCrop(optionsGfx, 0, 128, 512, 256)
+		elseif gfx == "high" then 
+			mgSetCrop(optionsGfx, 0, 256, 512, 384) 
+		end
+		mgSetOrigo(optionsGfx, "pixel", 256, -150)
+		mgDraw(optionsGfx)
+
+		local snd1 = mgGet("audio.musicEnabled")
+		if snd1 == "0" then
+			 mgSetCrop(optionsSnd, 0, 0, 110, 128)
+		elseif snd1 == "0.3" then 
+			mgSetCrop(optionsSnd, 0, 128, 110, 256)
+		elseif snd1 == "0.7" then
+			mgSetCrop(optionsSnd, 0, 256, 110, 384) 
+		else
+			mgSetCrop(optionsSnd, 0, 384, 110, 512) 
+		end
+		mgSetOrigo(optionsSnd, "center")
+		mgSetPos(optionsSnd, -135, -110)
+		mgDraw(optionsSnd)
+
+		local snd1 = mgGet("audio.soundEnabled")
+		if snd1 == "0" then
+			 mgSetCrop(optionsSnd, 0, 0, 110, 128)
+		elseif snd1 == "0.3" then 
+			mgSetCrop(optionsSnd, 0, 128, 110, 256)
+		elseif snd1 == "0.7" then
+			mgSetCrop(optionsSnd, 0, 256, 110, 384) 
+		else
+			mgSetCrop(optionsSnd, 0, 384, 110, 512) 
+		end
+		mgSetOrigo(optionsSnd, "center")
+		mgSetPos(optionsSnd, 225, -110)
+		mgDraw(optionsSnd)
+		mgPopCanvas()
+	end
+	
+	if waiting then
+		mgFullScreenColor(0,0,0,0.5)
+		waitAngle = waitAngle - 0.1
+		mgSetRot(waitImg, waitAngle)
+		mgDraw(waitImg)
+	end
+end
+
+function startLevelListRequest()
+	LevelListRequest = HSHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/featured?format=lua")
+	if LevelListRequest then
+		waitMgr:start("Getting featured levels...")
+	end
+end
+
+function updateLevelListRequest()
+	if LevelListRequest then
+		local status = HSHttpUpdate(LevelListRequest)
+		
+		if status == HS_HTTP_DONE then
+			pushNewLevelMenu("Featured levels", parseLevelList(HSHttpData(LevelListRequest)))
+			
+			waitMgr:stop()
+			HSHttpRelease(LevelListRequest)
+			LevelListRequest = nil
+		elseif status == HS_HTTP_ERROR then
+			waitMgr:stop()
+			HSHttpRelease(LevelListRequest)
+			LevelListRequest = nil
+		end
+	end
+end
+
+function parseLevelList(string)
+	-- TODO
+	return {}
+end
+
+function pushNewLevelMenu(title, levels)
+	menuStack:push("levellist", {
+		offset = 0,
+		list = levels,
+	})
+end
+
+function startLevelRequest(url)
+	LevelRequest = HSHttpRequest(url)
+	if LevelRequest then
+		waitMgr:start("Downloading level...")
+	end
+end
+
+function updateLevelRequest()
+	if LevelRequest then
+		local status = HSHttpUpdate(LevelRequest)
+		
+		if status == HS_HTTP_PENDING then
+			-- nop
+		elseif status == HS_HTTP_DONE then
+			waitMgr:stop()
+			
+			local path = HSGetInternalDataPath() .. "/overlay.zip"
+			local data = HSHttpData(LevelRequest)
+			HSWriteFile(path, data)
+			
+			HSLog(HS_LOG_ERROR, "Wrote " .. path)
+			
+			HSHttpRelease(LevelRequest)
+			LevelRequest = nil
+			
+			HSOverlayUnmount()
+			HSOverlayMount(path)
+			
+			HSLog(HS_LOG_ERROR, "Mounted " .. path)
+			
+			mgCommand("level.start level:basic")
+		elseif status == HS_HTTP_ERROR then
+			HSLog(HS_LOG_ERROR, "Failed to request level")
+			HSHttpRelease(LevelRequest)
+			LevelRequest = nil
+			waitMgr:stop()
+		end
+	end
+end
+
+function handleCommand(cmd)
+	if cmd == "showoptions" then
+		mgSetUiModal(optionsUi, true)
+		mgSetAlpha(optionsCanvas, 0)
+		mgSetScale(optionsCanvas, 1.5, 1.2)
+		mgSetScale(optionsCanvas, uiScale, uiScale, "easeout", 0.15)
+		mgSetAlpha(optionsCanvas, 1, "easeout", 0.15)
+	end
+
+	if cmd == "hideoptions" then
+		mgSetUiModal(optionsUi, false)
+		mgSetScale(optionsCanvas, 0.2, 0.4, "easein", 0.15)
+		mgSetAlpha(optionsCanvas, 0, "easein", 0.15)
+	end
+	
+	if startsWith(cmd, "startLevelAtIndexFromCurrentOffset:") then
+		local state = menuStack:getState()
+		
+		if menuStack:getType() == "levellist" then
+			startLevelRequest(state.list[state.offset + tonumber(getFirst(cmd))])
+		end
+	end
+end
+
+function MenuStack()
+	return {
+		items = {},
+		push = function (self, type, state)
+			self.items[#self.items + 1] = {
+				type = t,
+				state = state,
+			}
+		end
+		pop = function (self)
+			self.items[#self.items] = nil
+		end
+		getState = function (self)
+			return self.items[#self.items].state
+		end
+		getType = function (self)
+			return self.items[#self.items].type
+		end
+	}
+end
+
+menuStack = MenuStack()
