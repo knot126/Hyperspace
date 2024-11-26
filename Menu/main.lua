@@ -109,6 +109,10 @@ function load()
 	mgSetPos(waitImg, centerX, centerY)
 	waitAngle = 0
 	
+	waitText = mgCreateText("smashhit")
+	mgSetScale(waitText, 0.75, 0.75)
+	mgSetPos(waitText, centerX, centerY + 192)
+	
 	levelListUi = mgCreateUi("levellistui.xml")
 	mgSetOrigo(levelListUi, "center")
 	mgSetScale(levelListUi, 1.5, 1.5)
@@ -222,7 +226,7 @@ function drawWorld2()
 	if t == "levellist" then
 		mgDraw(levelListUi)
 		
-		mgSetPos(levelText, centerX - 100, 30)
+		mgSetPos(levelText, centerX - 100, top + 30)
 		mgSetText(levelText, tostring(state.offset) .. " of " .. tostring(#state.list))
 		mgDraw(levelText)
 		
@@ -258,6 +262,10 @@ function drawWorld2()
 		waitAngle = waitAngle - 0.1
 		mgSetRot(waitImg, waitAngle)
 		mgDraw(waitImg)
+		
+		mgSetText(waitText, waitingReason)
+		mgSetOrigo(waitText, "center")
+		mgDraw(waitText)
 	end
 end
 
@@ -447,7 +455,7 @@ function handleCommand(cmd)
 			state.offset = state.offset - tonumber(getSecond(cmd))
 			
 			if state.offset < 0 then
-				state.offset = 0
+				state.offset = (#state.list - #state.list % 3)
 			end
 		end
 	end
