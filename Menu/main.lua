@@ -11,6 +11,7 @@ HOSTNAME = "192.168.1.128:5000"
 waiting = false
 waitingReason = ""
 loadingFrame = 0
+levelToPlay = ""
 
 waitMgr = {
 	start = function (self, reason)
@@ -215,27 +216,24 @@ function drawWorld2()
 		mgPopCanvas()
 	end
 	
-	if waiting then
-		mgFullScreenColor(0,0,0,0.5)
-		waitAngle = waitAngle - 0.1
-		mgSetRot(waitImg, waitAngle)
-		mgDraw(waitImg)
-	end
-	
 	local t = menuStack:getType()
 	local state = menuStack:getState()
 	
 	if t == "levellist" then
 		mgDraw(levelListUi)
 		
+		mgSetPos(levelText, centerX - 100, 30)
+		mgSetText(levelText, tostring(state.offset) .. " of " .. tostring(#state.list))
+		mgDraw(levelText)
+		
 		local textX = centerX - 450
 		local textY = centerY - 330
 		for i = 1, 3 do
-			if #state.list > state.offset + i then
+			if #state.list < state.offset + i then
 				break
 			end
 			
-			local info = state.list[i]
+			local info = state.list[state.offset + i]
 			
 			if info == nil then
 				break
@@ -245,11 +243,22 @@ function drawWorld2()
 			mgSetText(levelText, info.name)
 			mgDraw(levelText)
 			
+			mgSetPos(levelText, textX, textY+80)
+			mgSetText(levelText, "by " .. info.creator)
+			mgDraw(levelText)
+			
 			textY = textY + 240
 		end
 	end
 	
 	errorPopup:draw()
+	
+	if waiting then
+		mgFullScreenColor(0,0,0,0.5)
+		waitAngle = waitAngle - 0.1
+		mgSetRot(waitImg, waitAngle)
+		mgDraw(waitImg)
+	end
 end
 
 function drawWorld()
@@ -358,7 +367,7 @@ function updateLevelRequest()
 			
 			HSLog(HS_LOG_INFO, "Mounted " .. path)
 			
-			mgCommand("level.start level:basic")
+			mgCommand("level.start level:" .. levelToPlay)
 		elseif status == HS_HTTP_ERROR then
 			errorPopup:show("Failed to request level")
 			HSHttpRelease(LevelRequest)
@@ -399,8 +408,17 @@ function handleCommand(cmd)
 			
 			if menuStack:getType() == "levellist" then
 				local index = state.offset + tonumber(getSecond(cmd))
+				
 				if index <= #state.list then
-					startLevelRequest(state.list[index].url)
+					local info = state.list[index]
+					
+					if info.level == "*NONE*" then
+						levelToPlay = string.lower(info.name)
+					else
+						levelToPlay = info.level
+					end
+					
+					startLevelRequest(info.url)
 				end
 			end
 		end)

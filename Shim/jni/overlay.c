@@ -94,6 +94,8 @@ bool HSOverlayUnmount(void) {
 	}
 	
 	mz_zip_reader_end(gZip);
+	free(gZip);
+	gZip = NULL;
 	
 	return true;
 }
