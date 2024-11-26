@@ -1,9 +1,9 @@
 <!-- Auto generated from levellistui.svg -->
 <ui texture="levellistui.png" shade="true">
-	<rect coords="100 30 700 150" cmd="startLevelAtIndexFromCurrentOffset: 1"/>
-	<rect coords="100 190 700 310" cmd="startLevelAtIndexFromCurrentOffset: 2"/>
-	<rect coords="0 190 80 310" cmd="subOffset: 3"/>
-	<rect coords="720 190 800 310" cmd="addOffset: 3"/>
-	<rect coords="100 350 700 470" cmd="startLevelAtIndexFromCurrentOffset: 3"/>
+	<rect coords="100 30 700 150" cmd="script:startLevelAtIndexFromCurrentOffset 1"/>
+	<rect coords="100 190 700 310" cmd="script:startLevelAtIndexFromCurrentOffset 2"/>
+	<rect coords="0 190 80 310" cmd="script:subOffset 3"/>
+	<rect coords="720 190 800 310" cmd="script:addOffset 3"/>
+	<rect coords="100 350 700 470" cmd="script:startLevelAtIndexFromCurrentOffset 3"/>
 	<outside cmd="script:hidelevellistui"/>
 </ui>

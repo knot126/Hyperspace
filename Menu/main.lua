@@ -110,8 +110,13 @@ function load()
 	
 	levelListUi = mgCreateUi("levellistui.xml")
 	mgSetOrigo(levelListUi, "center")
-	mgSetScale(levelListUi, 1, 1)
+	mgSetScale(levelListUi, 1.5, 1.5)
 	mgSetPos(levelListUi, centerX, centerY)
+	
+	levelText = mgCreateText("smashhit")
+	mgSetColor(levelText, 0, 0, 0)
+	mgSetScale(levelText, 0.75, 0.75)
+	mgSetPos(levelText, centerX, centerY)
 	
 	errorUi = mgCreateUi("error.xml")
 	mgSetOrigo(errorUi, "center")
@@ -217,11 +222,31 @@ function drawWorld2()
 		mgDraw(waitImg)
 	end
 	
-	local type = menuStack:getType()
+	local t = menuStack:getType()
 	local state = menuStack:getState()
 	
-	if type == "levellist" then
+	if t == "levellist" then
 		mgDraw(levelListUi)
+		
+		local textX = centerX - 450
+		local textY = centerY - 330
+		for i = 1, 3 do
+			if #state.list > state.offset + i then
+				break
+			end
+			
+			local info = state.list[i]
+			
+			if info == nil then
+				break
+			end
+			
+			mgSetPos(levelText, textX, textY)
+			mgSetText(levelText, info.name)
+			mgDraw(levelText)
+			
+			textY = textY + 240
+		end
 	end
 	
 	errorPopup:draw()
@@ -305,6 +330,8 @@ function startLevelRequest(url)
 	LevelRequest = HSHttpRequest(url)
 	if LevelRequest then
 		waitMgr:start("Downloading level...")
+	else
+		errorPopup:show("Failed to connect to server. Try again.")
 	end
 end
 
@@ -333,7 +360,6 @@ function updateLevelRequest()
 			
 			mgCommand("level.start level:basic")
 		elseif status == HS_HTTP_ERROR then
--- 			HSLog(HS_LOG_ERROR, "Failed to request level")
 			errorPopup:show("Failed to request level")
 			HSHttpRelease(LevelRequest)
 			LevelRequest = nil
@@ -343,6 +369,8 @@ function updateLevelRequest()
 end
 
 function handleCommand(cmd)
+	HSLog(HS_LOG_INFO, cmd)
+	
 	if cmd == "load" then
 		load()
 	end
@@ -365,11 +393,44 @@ function handleCommand(cmd)
 		mgSetAlpha(optionsCanvas, 0, "easein", 0.15)
 	end
 	
-	if startsWith(cmd, "startLevelAtIndexFromCurrentOffset:") then
+	if startsWith(cmd, "startLevelAtIndexFromCurrentOffset") then
+		status, message = pcall(function ()
+			local state = menuStack:getState()
+			
+			if menuStack:getType() == "levellist" then
+				local index = state.offset + tonumber(getSecond(cmd))
+				if index <= #state.list then
+					startLevelRequest(state.list[index].url)
+				end
+			end
+		end)
+		
+		if not status then
+			HSLog(HS_LOG_ERROR, message)
+		end
+	end
+	
+	if startsWith(cmd, "addOffset") then
 		local state = menuStack:getState()
 		
 		if menuStack:getType() == "levellist" then
-			startLevelRequest(state.list[state.offset + tonumber(getFirst(cmd))])
+			state.offset = state.offset + tonumber(getSecond(cmd))
+			
+			if state.offset > #state.list then
+				state.offset = 0
+			end
+		end
+	end
+	
+	if startsWith(cmd, "subOffset") then
+		local state = menuStack:getState()
+		
+		if menuStack:getType() == "levellist" then
+			state.offset = state.offset - tonumber(getSecond(cmd))
+			
+			if state.offset < 0 then
+				state.offset = 0
+			end
 		end
 	end
 end
@@ -377,7 +438,7 @@ end
 function MenuStack()
 	return {
 		items = {},
-		push = function (self, type, state)
+		push = function (self, t, state)
 			self.items[#self.items + 1] = {
 				type = t,
 				state = state,
