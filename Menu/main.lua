@@ -12,6 +12,7 @@ waiting = false
 waitingReason = ""
 loadingFrame = 0
 levelToPlay = ""
+targetFile = ""
 
 waitMgr = {
 	start = function (self, reason)
@@ -361,7 +362,8 @@ function updateLevelRequest()
 		elseif status == HS_HTTP_DONE then
 			waitMgr:stop()
 			
-			local path = HSGetInternalDataPath() .. "/overlay.zip"
+			HSMakeDir(HSGetInternalDataPath() .. "/saved")
+			local path = HSGetInternalDataPath() .. "/saved/" .. targetFile
 			local data = HSHttpData(LevelRequest)
 			HSWriteFile(path, data)
 			
@@ -370,12 +372,7 @@ function updateLevelRequest()
 			HSHttpRelease(LevelRequest)
 			LevelRequest = nil
 			
-			HSOverlayUnmount()
-			HSOverlayMount(path)
-			
-			HSLog(HS_LOG_INFO, "Mounted " .. path)
-			
-			mgCommand("level.start level:" .. levelToPlay)
+			startLevel(targetFile)
 		elseif status == HS_HTTP_ERROR then
 			errorPopup:show("Failed to request level")
 			HSHttpRelease(LevelRequest)
@@ -383,6 +380,17 @@ function updateLevelRequest()
 			waitMgr:stop()
 		end
 	end
+end
+
+function startLevel(filename)
+	local path = HSGetInternalDataPath() .. "/saved/" .. filename
+	
+	HSOverlayUnmount()
+	HSOverlayMount(path)
+	
+	HSLog(HS_LOG_INFO, "Mounted " .. path)
+	
+	mgCommand("level.start level:" .. levelToPlay)
 end
 
 function handleCommand(cmd)
@@ -426,7 +434,15 @@ function handleCommand(cmd)
 						levelToPlay = info.level
 					end
 					
-					startLevelRequest(info.url)
+					targetFile = info.filename
+					
+					-- If we've already downloaded the level, don't download it
+					-- again. Otherwise fetch it.
+					if HSIsFile(HSGetInternalDataPath() .. "/saved/" .. targetFile) then
+						startLevel(targetFile)
+					else
+						startLevelRequest(info.url)
+					end
 				end
 			end
 		end)
