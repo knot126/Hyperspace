@@ -8,8 +8,8 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
-   sodipodi:docname="Hyperspace.svg"
-   inkscape:export-filename="Hyperspace.png"
+   sodipodi:docname="Hyperspace Lite Icon.svg"
+   inkscape:export-filename="Hyperspace Lite.png"
    inkscape:export-xdpi="512"
    inkscape:export-ydpi="512"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -28,9 +28,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="false"
-     inkscape:zoom="11.974325"
-     inkscape:cx="14.739871"
-     inkscape:cy="23.299852"
+     inkscape:zoom="14.25"
+     inkscape:cx="23.894737"
+     inkscape:cy="24"
      inkscape:window-width="1707"
      inkscape:window-height="892"
      inkscape:window-x="0"
@@ -40,6 +40,18 @@
      showguides="false" />
   <defs
      id="defs2">
+    <linearGradient
+       id="linearGradient17"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ffe680;stop-opacity:1"
+         offset="0"
+         id="stop17" />
+      <stop
+         style="stop-color:#ffcc00;stop-opacity:1"
+         offset="1"
+         id="stop18" />
+    </linearGradient>
     <linearGradient
        inkscape:collect="always"
        id="linearGradient2590">
@@ -1480,6 +1492,87 @@
          operator="over"
          result="composite2" />
     </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter15"
+       x="-0.085039376"
+       y="-0.22677166"
+       width="1.1700788"
+       height="1.5795276">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.349020"
+         flood-color="rgb(0,0,0)"
+         id="feFlood14" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="0.100000"
+         id="feGaussianBlur14" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="0.100000"
+         id="feOffset14" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite14" />
+      <feComposite
+         result="fbSourceGraphic"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite15" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix15" />
+      <feFlood
+         id="feFlood15"
+         result="flood"
+         in="fbSourceGraphic"
+         flood-opacity="0.349020"
+         flood-color="rgb(0,0,0)" />
+      <feGaussianBlur
+         id="feGaussianBlur15"
+         result="blur"
+         in="fbSourceGraphic"
+         stdDeviation="0.200000" />
+      <feOffset
+         id="feOffset15"
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="0.300000" />
+      <feComposite
+         id="feComposite16"
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset" />
+      <feComposite
+         id="feComposite17"
+         result="comp2"
+         operator="over"
+         in="fbSourceGraphic"
+         in2="comp1" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient17"
+       id="linearGradient18"
+       x1="4.8674212"
+       y1="4.4932833"
+       x2="10.627932"
+       y2="14.47078"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -1793,6 +1886,25 @@
          cx="6.3499999"
          cy="6.3499999"
          r="2.1695833" />
+      <rect
+         style="fill:url(#linearGradient18);stroke-width:1.32292;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter15)"
+         id="rect10"
+         width="8.4666662"
+         height="3.175"
+         x="3.1750002"
+         y="8.4666672"
+         ry="0.52916664" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.25718px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:0.508935;stroke-linecap:round;stroke-linejoin:round"
+         x="7.3708763"
+         y="11.19418"
+         id="text10"><tspan
+           sodipodi:role="line"
+           id="tspan10"
+           style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-family:'CMU Bright';-inkscape-font-specification:'CMU Bright Semi-Bold';fill:#000000;stroke-width:0.508935"
+           x="7.3708763"
+           y="11.19418">LITE</tspan></text>
     </g>
     <rect
        style="fill:#c3b5e3;fill-opacity:1;stroke-width:10.5833;stroke-linejoin:round"
