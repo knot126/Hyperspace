@@ -283,7 +283,11 @@ function startLevelListRequest()
 	if LevelListRequest then
 		waitMgr:start("Getting featured levels...")
 	else
-		errorPopup:show("Failed to create connection")
+		if hasCachedLevelList() then
+			loadOfflineLevelMenu()
+		else
+			errorPopup:show("Failed to create connection")
+		end
 	end
 end
 
@@ -292,13 +296,26 @@ function updateLevelListRequest()
 		local status = HSHttpUpdate(LevelListRequest)
 		
 		if status == HS_HTTP_DONE then
-			pushNewLevelMenu("Featured levels", decodeBinary(HSHttpData(LevelListRequest)))
+			local data = HSHttpData(LevelListRequest)
+			
+			-- cache it so if the user is offline later they can still open the
+			-- game and play downloaded levels. make sure to tell them they are
+			-- offline tho!
+			HSWriteFile(HSGetInternalDataPath() .. "/featured.bin", data)
+			
+			pushNewLevelMenu("Featured levels", decodeBinary(data))
 			
 			waitMgr:stop()
 			HSHttpRelease(LevelListRequest)
 			LevelListRequest = nil
 		elseif status == HS_HTTP_ERROR then
-			errorPopup:show("Failed to get level list")
+			-- If we have a cached response, load that instead of just failing.
+			if hasCachedLevelList() then
+				loadOfflineLevelMenu()
+			else
+				errorPopup:show("Failed to get level list")
+			end
+			
 			waitMgr:stop()
 			HSHttpRelease(LevelListRequest)
 			LevelListRequest = nil
@@ -335,6 +352,28 @@ function decodeBinary(string)
 	end
 	
 	return values
+end
+
+function filterOffline(data)
+	local newlist = {}
+	
+	for i, v in ipairs(data) do
+		if HSIsFile(HSGetInternalDataPath() .. "/saved/" .. v.filename) then
+			newlist[#newlist + 1] = v
+		end
+	end
+	
+	return newlist
+end
+
+function hasCachedLevelList()
+	return HSIsFile(HSGetInternalDataPath() .. "/featured.bin")
+end
+
+function loadOfflineLevelMenu()
+	local data = HSReadFile(HSGetInternalDataPath() .. "/featured.bin")
+	pushNewLevelMenu("Featured levels", filterOffline(decodeBinary(data)))
+	errorPopup:show("You seem to be offline. You can still play previously downloaded levels, but not download any new ones.")
 end
 
 function pushNewLevelMenu(title, levels)
