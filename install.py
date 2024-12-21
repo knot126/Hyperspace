@@ -9,7 +9,11 @@ print(f"Found apk: {apk_path}")
 
 assets_path = f"{apk_path}/assets"
 
+def install_dir(name):
+	for filename in os.listdir(f'./{name}'):
+		print(f'install {name.lower()}/{filename}.mp3')
+		shutil.copy(f'./{name}/{filename}', f'{assets_path}/{name.lower()}/{filename}.mp3')
+
 # copy menu stuff
-for filename in os.listdir('./Menu'):
-	print(f'install menu/{filename}.mp3')
-	shutil.copy(f'./Menu/{filename}', f'{assets_path}/menu/{filename}.mp3')
+install_dir("Menu")
+install_dir("Fonts")

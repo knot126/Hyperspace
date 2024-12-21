@@ -85,11 +85,15 @@ function init()
 end
 
 function load()
+	bgImage = mgCreateImage("Background.png")
+	mgSetScale(bgImage, screenWidth/1280, screenHeight/720)
+	mgSetPos(bgImage, left, top)
+	
 	optionsButton = mgCreateUi("optionsbutton.xml")
 	mgSetOrigo(optionsButton, "center")
 	mgSetScale(optionsButton, .75, .75)
 	mgSetPos(optionsButton, centerX, bottom-95)
-
+	
 	optionsCanvas = mgCreateCanvas(1,1)
 	mgSetPos(optionsCanvas, centerX, centerY)
 	mgSetScale(optionsCanvas, .5, .5)
@@ -110,7 +114,7 @@ function load()
 	mgSetPos(waitImg, centerX, centerY)
 	waitAngle = 0
 	
-	waitText = mgCreateText("smashhit")
+	waitText = mgCreateText("lexend")
 	mgSetScale(waitText, 0.75, 0.75)
 	mgSetPos(waitText, centerX, centerY + 192)
 	
@@ -119,7 +123,7 @@ function load()
 	mgSetScale(levelListUi, 1.5, 1.5)
 	mgSetPos(levelListUi, centerX, centerY)
 	
-	levelText = mgCreateText("smashhit")
+	levelText = mgCreateText("lexend")
 	mgSetColor(levelText, 0, 0, 0)
 	mgSetScale(levelText, 0.75, 0.75)
 	mgSetPos(levelText, centerX, centerY)
@@ -163,7 +167,8 @@ function drawWorld2()
 		return
 	end
 	
-	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
+-- 	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
+	mgDraw(bgImage)
 	
 	updateLevelRequest()
 	updateLevelListRequest()

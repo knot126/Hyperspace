@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Convert an SVG file with rects that have shcmd attribs to smash hit uis
 """
