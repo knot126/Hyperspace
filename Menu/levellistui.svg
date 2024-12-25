@@ -10,16 +10,15 @@
    inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
    sodipodi:docname="levellistui.svg"
    inkscape:export-filename="levellistui.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
      id="namedview1"
-     pagecolor="#808080"
+     pagecolor="#000000"
      bordercolor="#000000"
      borderopacity="0.25"
      inkscape:showpageshadow="2"
@@ -27,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="1.24375"
+     inkscape:zoom="1"
      inkscape:cx="400"
-     inkscape:cy="250.05025"
+     inkscape:cy="250"
      inkscape:window-width="1707"
      inkscape:window-height="892"
      inkscape:window-x="0"
@@ -38,39 +37,6 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
-    <linearGradient
-       id="linearGradient21"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#cccccc;stop-opacity:1"
-         offset="0"
-         id="stop21" />
-      <stop
-         style="stop-color:#f2f2f2;stop-opacity:1"
-         offset="1"
-         id="stop22" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient16"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#cccccc;stop-opacity:1"
-         offset="0"
-         id="stop16" />
-      <stop
-         style="stop-color:#e6e6e6;stop-opacity:1"
-         offset="1"
-         id="stop17" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient16"
-       id="linearGradient17"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientUnits="userSpaceOnUse" />
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Noise Fill"
@@ -117,15 +83,6 @@
          result="composite2"
          id="feComposite21" />
     </filter>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient21"
-       id="linearGradient22"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientUnits="userSpaceOnUse" />
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
@@ -566,26 +523,6 @@
          result="composite2"
          id="feComposite21-0" />
     </filter>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient16"
-       id="linearGradient54"
-       gradientUnits="userSpaceOnUse"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientTransform="translate(-5e-6,159.99999)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient21"
-       id="linearGradient55"
-       gradientUnits="userSpaceOnUse"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientTransform="translate(-5e-6,159.99999)" />
     <filter
        style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
@@ -670,33 +607,89 @@
          result="composite2"
          id="feComposite21-6" />
     </filter>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient16"
-       id="linearGradient56"
-       gradientUnits="userSpaceOnUse"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientTransform="translate(-2e-6,320)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient21"
-       id="linearGradient57"
-       gradientUnits="userSpaceOnUse"
-       x1="100"
-       y1="150"
-       x2="100"
-       y2="30"
-       gradientTransform="translate(-2e-6,320)" />
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter46"
+       x="-0.12"
+       y="-0.12"
+       width="1.24"
+       height="1.265">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.501961"
+         flood-color="rgb(0,0,0)"
+         id="feFlood45" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="4.000000"
+         id="feGaussianBlur45" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="2.000000"
+         id="feOffset45" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite45" />
+      <feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite46" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter48"
+       x="-0.12"
+       y="-0.12"
+       width="1.24"
+       height="1.265">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.501961"
+         flood-color="rgb(0,0,0)"
+         id="feFlood46" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="4.000000"
+         id="feGaussianBlur46" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="2.000000"
+         id="feOffset46" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite47" />
+      <feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite48" />
+    </filter>
   </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="opacity:1;fill:url(#linearGradient17);fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter26);stroke-dasharray:none"
+       style="opacity:1;fill:#333333;fill-opacity:1;stroke:#4d4d4d;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter26);stroke-dasharray:none"
        id="rect1"
        width="600"
        height="120"
@@ -705,43 +698,33 @@
        ry="8"
        shcmd="script:startLevelAtIndexFromCurrentOffset 1" />
     <rect
-       style="fill:#159af1;fill-opacity:0.85;stroke:#89ccf7;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter35-2)"
+       style="fill:#b380ff;fill-opacity:0.85;stroke:#ccaaff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="rect1-6-2-7"
        width="80"
        height="80"
        x="718"
        y="210"
-       ry="40"
        shcmd="script:addOffset 3"
-       rx="40" />
+       rx="10" />
     <rect
-       style="fill:#159af1;fill-opacity:0.85000002;stroke:#89ccf7;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter35);stroke-opacity:1"
+       style="fill:#b380ff;fill-opacity:0.85;stroke:#ccaaff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="rect1-6-2"
        width="80"
        height="80"
        x="2"
        y="210"
-       ry="40"
        shcmd="script:subOffset 3"
-       rx="40" />
+       rx="10" />
     <path
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.54298;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.54298;stroke-linecap:round;stroke-linejoin:round"
        d="m 741.99998,270.00001 40,-20 -40,-20"
        id="path3-3" />
     <path
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.54298;stroke-linecap:round;stroke-linejoin:round"
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.54298;stroke-linecap:round;stroke-linejoin:round"
        d="M 58,270 18,250 58,230"
        id="path3" />
     <rect
-       style="opacity:1;fill:url(#linearGradient22);fill-opacity:1;stroke:none;stroke-width:3.32586;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter21)"
-       id="rect17"
-       width="600"
-       height="120"
-       x="100"
-       y="30"
-       ry="8" />
-    <rect
-       style="fill:url(#linearGradient54);fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter26-3)"
+       style="fill:#333333;fill-opacity:1;stroke:#4d4d4d;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter26-3)"
        id="rect1-1"
        width="600"
        height="120"
@@ -750,15 +733,7 @@
        ry="8"
        shcmd="script:startLevelAtIndexFromCurrentOffset 2" />
     <rect
-       style="fill:url(#linearGradient55);fill-opacity:1;stroke:none;stroke-width:3.32586;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter21-0)"
-       id="rect17-5"
-       width="600"
-       height="120"
-       x="100"
-       y="190"
-       ry="8" />
-    <rect
-       style="fill:url(#linearGradient56);fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter26-5)"
+       style="fill:#333333;fill-opacity:1;stroke:#4d4d4d;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter26-5)"
        id="rect1-8"
        width="600"
        height="120"
@@ -766,22 +741,5 @@
        y="350"
        ry="8"
        shcmd="script:startLevelAtIndexFromCurrentOffset 3" />
-    <rect
-       style="fill:url(#linearGradient57);fill-opacity:1;stroke:none;stroke-width:3.32586;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter21-4)"
-       id="rect17-4"
-       width="600"
-       height="120"
-       x="100"
-       y="350"
-       ry="8" />
-    <rect
-       style="fill:#159af1;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
-       id="rect38"
-       width="144"
-       height="59"
-       x="28"
-       y="-79"
-       rx="40"
-       ry="40" />
   </g>
 </svg>

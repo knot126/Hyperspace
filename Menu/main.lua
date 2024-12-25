@@ -109,7 +109,7 @@ function load()
 	optionsSnd = mgCreateImage("toggle_sound.png")
 	
 	waitImg = mgCreateImage("Wait.png")
-	mgSetScale(waitImg, 1, 1)
+	mgSetScale(waitImg, 0.75, 0.75)
 	mgSetOrigo(waitImg, "center")
 	mgSetPos(waitImg, centerX, centerY)
 	waitAngle = 0
@@ -120,11 +120,12 @@ function load()
 	
 	levelListUi = mgCreateUi("levellistui.xml")
 	mgSetOrigo(levelListUi, "center")
-	mgSetScale(levelListUi, 1.5, 1.5)
+-- 	mgSetScale(levelListUi, 1.5, 1.5)
+	mgSetScale(levelListUi, 0.75, 0.75)
 	mgSetPos(levelListUi, centerX, centerY)
 	
 	levelText = mgCreateText("lexend")
-	mgSetColor(levelText, 0, 0, 0)
+	mgSetColor(levelText, 1, 1, 1)
 	mgSetScale(levelText, 0.75, 0.75)
 	mgSetPos(levelText, centerX, centerY)
 	
@@ -232,8 +233,14 @@ function drawWorld2()
 	if t == "levellist" then
 		mgDraw(levelListUi)
 		
-		mgSetPos(levelText, centerX - 100, top + 30)
+		mgSetPos(levelText, centerX - 50, top + 90)
+		mgSetText(levelText, tostring(state.title))
+		mgSetOrigo(levelText, "center")
+		mgDraw(levelText)
+		
+		mgSetPos(levelText, centerX - 50, bottom - 90)
 		mgSetText(levelText, tostring(state.offset) .. " of " .. tostring(#state.list))
+		mgSetOrigo(levelText, "center")
 		mgDraw(levelText)
 		
 		local textX = centerX - 450
@@ -251,10 +258,12 @@ function drawWorld2()
 			
 			mgSetPos(levelText, textX, textY)
 			mgSetText(levelText, info.name)
+			mgSetOrigo(levelText, "topleft")
 			mgDraw(levelText)
 			
 			mgSetPos(levelText, textX, textY+80)
 			mgSetText(levelText, "by " .. info.creator)
+			mgSetOrigo(levelText, "topleft")
 			mgDraw(levelText)
 			
 			textY = textY + 240
@@ -383,6 +392,7 @@ end
 
 function pushNewLevelMenu(title, levels)
 	menuStack:push("levellist", {
+		title = title,
 		offset = 0,
 		list = levels,
 	})
