@@ -14,7 +14,6 @@
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
@@ -28,8 +27,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1"
-     inkscape:cx="399.5"
-     inkscape:cy="250"
+     inkscape:cx="400"
+     inkscape:cy="272"
      inkscape:window-width="1707"
      inkscape:window-height="892"
      inkscape:window-x="0"
@@ -38,54 +37,6 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
-    <linearGradient
-       id="linearGradient189"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#ececec;stop-opacity:1;"
-         offset="0"
-         id="stop189" />
-      <stop
-         style="stop-color:#f9f9f9;stop-opacity:1"
-         offset="1"
-         id="stop190" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient186"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#00d455;stop-opacity:1"
-         offset="0"
-         id="stop186" />
-      <stop
-         style="stop-color:#80ffb3;stop-opacity:1"
-         offset="1"
-         id="stop187" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient184"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#00d455;stop-opacity:1;"
-         offset="0"
-         id="stop184" />
-      <stop
-         style="stop-color:#00ff66;stop-opacity:1"
-         offset="1"
-         id="stop185" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient65"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#f9f9f9;stop-opacity:1"
-         offset="0"
-         id="stop65" />
-      <stop
-         style="stop-color:#cccccc;stop-opacity:1"
-         offset="1"
-         id="stop66" />
-    </linearGradient>
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Noise Fill"
@@ -132,15 +83,6 @@
          result="composite2"
          id="feComposite64" />
     </filter>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient65"
-       id="linearGradient66"
-       x1="40"
-       y1="40"
-       x2="38.33707"
-       y2="461.66293"
-       gradientUnits="userSpaceOnUse" />
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Noise Fill"
@@ -191,10 +133,10 @@
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
        id="filter181"
-       x="-0.016507443"
-       y="-0.024368131"
-       width="1.0330149"
-       height="1.0606857">
+       x="-0.017313895"
+       y="-0.025558607"
+       width="1.0346278"
+       height="1.0630666">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -229,10 +171,10 @@
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
        id="filter183"
-       x="-0.065192305"
-       y="-0.19557692"
-       width="1.1303846"
-       height="1.4747998">
+       x="-0.05963675"
+       y="-0.17891025"
+       width="1.1192735"
+       height="1.4414665">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -263,40 +205,13 @@
          in2="comp1"
          id="feComposite183" />
     </filter>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient184"
-       id="linearGradient185"
-       x1="327.23462"
-       y1="490"
-       x2="327.23462"
-       y2="430"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient186"
-       id="linearGradient187"
-       x1="311"
-       y1="490"
-       x2="311"
-       y2="430"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient189"
-       id="linearGradient190"
-       x1="40"
-       y1="460"
-       x2="40"
-       y2="40"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter181);stroke-dasharray:none"
+       style="fill:#1a1a1a;fill-opacity:1;stroke:#4d4d4d;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter181);stroke-dasharray:none"
        id="rect1-6"
        width="620"
        height="420"
@@ -304,31 +219,7 @@
        y="40"
        ry="8" />
     <rect
-       style="opacity:1;fill:url(#linearGradient190);fill-opacity:1;stroke:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter160)"
-       id="rect1"
-       width="620"
-       height="420"
-       x="40"
-       y="40"
-       ry="8" />
-    <rect
-       style="opacity:0.05;fill:#000000;fill-opacity:1;stroke:none;stroke-width:3.32586;stroke-linecap:round;stroke-linejoin:round"
-       id="rect66"
-       width="620"
-       height="420"
-       x="742"
-       y="9"
-       ry="8" />
-    <rect
-       style="fill:none;fill-opacity:1;stroke:url(#linearGradient66);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
-       id="rect65"
-       width="620"
-       height="420"
-       x="40"
-       y="40"
-       ry="8" />
-    <rect
-       style="fill:url(#linearGradient185);fill-opacity:1;stroke:url(#linearGradient187);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter183);stroke-dasharray:none"
+       style="fill:#b380ff;fill-opacity:1;stroke:#ccaaff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter183);stroke-dasharray:none"
        id="rect64"
        width="180"
        height="60"
@@ -338,7 +229,7 @@
        shcmd="script:closeError" />
     <text
        xml:space="preserve"
-       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#ffffff;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
+       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#000000;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
        x="349.31198"
        y="470.16"
        id="text64"><tspan
@@ -348,7 +239,7 @@
          y="470.16">Okay</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#1a1a1a;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
+       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#ffffff;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
        x="349.31198"
        y="90.160004"
        id="text1"><tspan
@@ -356,10 +247,10 @@
          id="tspan1"
          x="349.31198"
          y="90.160004"
-         style="font-weight:bold">Whoops!</tspan></text>
+         style="font-weight:bold;fill:#ffffff">Whoops!</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#1a1a1a;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
+       style="font-size:32px;font-family:Lexend;-inkscape-font-specification:Lexend;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#ffffff;stroke-width:3.77953;stroke-linecap:round;stroke-linejoin:round"
        x="349.31198"
        y="261.664"
        id="text2"><tspan
@@ -367,6 +258,6 @@
          id="tspan2"
          x="349.31198"
          y="261.664"
-         style="font-weight:normal">A network error occured.</tspan></text>
+         style="font-weight:normal;fill:#ffffff">A network error occured.</tspan></text>
   </g>
 </svg>
