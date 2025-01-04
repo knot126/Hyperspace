@@ -1,0 +1,6 @@
+<!-- Auto generated from back.svg -->
+<!-- Scale: 2.0 -->
+<ui texture="back.png" shade="true">
+	<rect coords="40 40 160 160" cmd="script:popmenu"/>
+	<outside cmd="script:hideback"/>
+</ui>

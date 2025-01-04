@@ -90,6 +90,10 @@ function load()
 	mgSetScale(bgImage, screenWidth/1280, screenHeight/720)
 	mgSetPos(bgImage, left, top)
 	
+	back = mgCreateUi("back.xml")
+	mgSetScale(back, .75, .75)
+	mgSetPos(back, left + 25, top)
+	
 	optionsButton = mgCreateUi("optionsbutton.xml")
 	mgSetOrigo(optionsButton, "center")
 	mgSetScale(optionsButton, .75, .75)
@@ -184,55 +188,6 @@ function drawWorld2()
 	t = (t-0.5)*2
 	if t < 0 then t = 0 end
 	
-	mgSetAlpha(optionsButton, 1)
-	mgDraw(optionsButton)
-	
-	local optAlpha = mgGetAlpha(optionsCanvas)
-	if optAlpha > 0 then
-		mgFullScreenColor(0,0,0,optAlpha*0.5)
-		mgPushCanvas(optionsCanvas)
-		mgDraw(optionsUi)
-		local gfx = mgGet("game.graphics")
-		if gfx == "low" then
-			 mgSetCrop(optionsGfx, 0, 0, 512, 128)
-		elseif gfx == "medium" then 
-			mgSetCrop(optionsGfx, 0, 128, 512, 256)
-		elseif gfx == "high" then 
-			mgSetCrop(optionsGfx, 0, 256, 512, 384) 
-		end
-		mgSetOrigo(optionsGfx, "pixel", 256, -150)
-		mgDraw(optionsGfx)
-
-		local snd1 = mgGet("audio.musicEnabled")
-		if snd1 == "0" then
-			 mgSetCrop(optionsSnd, 0, 0, 110, 128)
-		elseif snd1 == "0.3" then 
-			mgSetCrop(optionsSnd, 0, 128, 110, 256)
-		elseif snd1 == "0.7" then
-			mgSetCrop(optionsSnd, 0, 256, 110, 384) 
-		else
-			mgSetCrop(optionsSnd, 0, 384, 110, 512) 
-		end
-		mgSetOrigo(optionsSnd, "center")
-		mgSetPos(optionsSnd, -135, -110)
-		mgDraw(optionsSnd)
-
-		local snd1 = mgGet("audio.soundEnabled")
-		if snd1 == "0" then
-			 mgSetCrop(optionsSnd, 0, 0, 110, 128)
-		elseif snd1 == "0.3" then 
-			mgSetCrop(optionsSnd, 0, 128, 110, 256)
-		elseif snd1 == "0.7" then
-			mgSetCrop(optionsSnd, 0, 256, 110, 384) 
-		else
-			mgSetCrop(optionsSnd, 0, 384, 110, 512) 
-		end
-		mgSetOrigo(optionsSnd, "center")
-		mgSetPos(optionsSnd, 225, -110)
-		mgDraw(optionsSnd)
-		mgPopCanvas()
-	end
-	
 	local t = menu:getType()
 	local state = menu:getState()
 	
@@ -274,6 +229,61 @@ function drawWorld2()
 			
 			textY = textY + 240
 		end
+	end
+	
+	if t == "options" then
+		mgSetAlpha(optionsButton, 1)
+		mgDraw(optionsButton)
+		
+		local optAlpha = mgGetAlpha(optionsCanvas)
+		if optAlpha > 0 then
+			mgFullScreenColor(0,0,0,optAlpha*0.5)
+			mgPushCanvas(optionsCanvas)
+			mgDraw(optionsUi)
+			local gfx = mgGet("game.graphics")
+			if gfx == "low" then
+				mgSetCrop(optionsGfx, 0, 0, 512, 128)
+			elseif gfx == "medium" then 
+				mgSetCrop(optionsGfx, 0, 128, 512, 256)
+			elseif gfx == "high" then 
+				mgSetCrop(optionsGfx, 0, 256, 512, 384) 
+			end
+			mgSetOrigo(optionsGfx, "pixel", 256, -150)
+			mgDraw(optionsGfx)
+			
+			local snd1 = mgGet("audio.musicEnabled")
+			if snd1 == "0" then
+				mgSetCrop(optionsSnd, 0, 0, 110, 128)
+			elseif snd1 == "0.3" then 
+				mgSetCrop(optionsSnd, 0, 128, 110, 256)
+			elseif snd1 == "0.7" then
+				mgSetCrop(optionsSnd, 0, 256, 110, 384) 
+			else
+				mgSetCrop(optionsSnd, 0, 384, 110, 512) 
+			end
+			mgSetOrigo(optionsSnd, "center")
+			mgSetPos(optionsSnd, -135, -110)
+			mgDraw(optionsSnd)
+			
+			local snd1 = mgGet("audio.soundEnabled")
+			if snd1 == "0" then
+				mgSetCrop(optionsSnd, 0, 0, 110, 128)
+			elseif snd1 == "0.3" then 
+				mgSetCrop(optionsSnd, 0, 128, 110, 256)
+			elseif snd1 == "0.7" then
+				mgSetCrop(optionsSnd, 0, 256, 110, 384) 
+			else
+				mgSetCrop(optionsSnd, 0, 384, 110, 512) 
+			end
+			mgSetOrigo(optionsSnd, "center")
+			mgSetPos(optionsSnd, 225, -110)
+			mgDraw(optionsSnd)
+			mgPopCanvas()
+		end
+	end
+	
+	if menu:depth() >= 2 then
+		mgDraw(back)
 	end
 	
 	errorPopup:draw()
@@ -454,6 +464,7 @@ function startLevel(filename)
 	
 	if success then
 		knLog(LOG_INFO, "Mounted " .. path)
+		knLoadTemplates()
 		mgCommand("level.start level:" .. levelToPlay)
 	else
 		knLog(LOG_ERROR, "Failed to mount " .. path)
@@ -563,6 +574,9 @@ function MenuStack()
 		getType = function (self)
 			if #self.items == 0 then return end
 			return self.items[#self.items].type
+		end,
+		depth = function (self)
+			return #self.items
 		end
 	}
 end

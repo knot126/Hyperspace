@@ -1,0 +1,7 @@
+<templates>
+	<template name="blue">              <properties color="0.7 0.8 1.0"/></template>
+	<template name="blackfloor">        <properties color="0 0 0" reflection="1" /></template>
+	<template name="work_s">            <properties lightLeft=".8" lightRight=".85" lightTop=".9" lightBottom=".75" lightFront="1" fogcolor="1.1 1.1 .9 0 0 .2" softshadow=".75" /></template>
+	<template name="work">              <properties tile="19" color="1 .98 .94"/></template>
+	<template name="scoretop">          <properties param0="color=.4 .8 1" /></template>
+</templates>
