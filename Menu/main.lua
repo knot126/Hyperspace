@@ -13,6 +13,7 @@ waitingReason = ""
 loadingFrame = 0
 levelToPlay = ""
 targetFile = ""
+listRequestType = "featured"
 
 waitMgr = {
 	start = function (self, reason)
@@ -134,6 +135,7 @@ function load()
 	mgSetScale(errorUi, 1.5, 1.5)
 	mgSetPos(errorUi, centerX, centerY)
 	
+	pushMainMenu()
 	startLevelListRequest()
 end
 
@@ -162,6 +164,11 @@ function frame()
 	end
 end
 
+function process()
+	updateLevelRequest()
+	updateLevelListRequest()
+end
+
 function drawWorld2()
 	if mgGet("game.loaded")=="0" then
 		drawLoading()
@@ -171,8 +178,7 @@ function drawWorld2()
 -- 	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
 	mgDraw(bgImage)
 	
-	updateLevelRequest()
-	updateLevelListRequest()
+	pcall(process)
 	
 	t = mgGet("game.menutransition")
 	t = (t-0.5)*2
@@ -227,8 +233,8 @@ function drawWorld2()
 		mgPopCanvas()
 	end
 	
-	local t = menuStack:getType()
-	local state = menuStack:getState()
+	local t = menu:getType()
+	local state = menu:getState()
 	
 	if t == "levellist" then
 		mgDraw(levelListUi)
@@ -288,14 +294,14 @@ function drawWorld()
 	local status, msg = pcall(drawWorld2)
 	
 	if not status then
-		HSLog(HS_LOG_ERROR, msg)
+		knLog(LOG_ERROR, msg)
 	end
 end
 
 function startLevelListRequest()
-	LevelListRequest = HSHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/featured?format=binary")
+	LevelListRequest = knHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/" .. listRequestType .. "?format=binary")
 	if LevelListRequest then
-		waitMgr:start("Getting featured levels...")
+		waitMgr:start("Getting " .. listRequestType .. " levels...")
 	else
 		if hasCachedLevelList() then
 			loadOfflineLevelMenu()
@@ -307,22 +313,22 @@ end
 
 function updateLevelListRequest()
 	if LevelListRequest then
-		local status = HSHttpUpdate(LevelListRequest)
+		local status = knHttpUpdate(LevelListRequest)
 		
-		if status == HS_HTTP_DONE then
-			local data = HSHttpData(LevelListRequest)
+		if status == KN_HTTP_DONE then
+			local data = knHttpData(LevelListRequest)
 			
 			-- cache it so if the user is offline later they can still open the
 			-- game and play downloaded levels. make sure to tell them they are
 			-- offline tho!
-			HSWriteFile(HSGetInternalDataPath() .. "/featured.bin", data)
+			knWriteFile(knGetInternalDataPath() .. "/" .. listRequestType .. ".bin", data)
 			
 			pushNewLevelMenu("Featured levels", decodeBinary(data))
 			
 			waitMgr:stop()
-			HSHttpRelease(LevelListRequest)
+			knHttpRelease(LevelListRequest)
 			LevelListRequest = nil
-		elseif status == HS_HTTP_ERROR then
+		elseif status == KN_HTTP_ERROR then
 			-- If we have a cached response, load that instead of just failing.
 			if hasCachedLevelList() then
 				loadOfflineLevelMenu()
@@ -331,7 +337,7 @@ function updateLevelListRequest()
 			end
 			
 			waitMgr:stop()
-			HSHttpRelease(LevelListRequest)
+			knHttpRelease(LevelListRequest)
 			LevelListRequest = nil
 		end
 	end
@@ -372,7 +378,7 @@ function filterOffline(data)
 	local newlist = {}
 	
 	for i, v in ipairs(data) do
-		if HSIsFile(HSGetInternalDataPath() .. "/saved/" .. v.filename) then
+		if knIsFile(knGetInternalDataPath() .. "/saved/" .. v.filename) then
 			newlist[#newlist + 1] = v
 		end
 	end
@@ -381,25 +387,29 @@ function filterOffline(data)
 end
 
 function hasCachedLevelList()
-	return HSIsFile(HSGetInternalDataPath() .. "/featured.bin")
+	return knIsFile(knGetInternalDataPath() .. "/" .. listRequestType .. ".bin")
 end
 
 function loadOfflineLevelMenu()
-	local data = HSReadFile(HSGetInternalDataPath() .. "/featured.bin")
+	local data = knReadFile(knGetInternalDataPath() .. "/" .. listRequestType .. ".bin")
 	pushNewLevelMenu("Featured levels", filterOffline(decodeBinary(data)))
 	errorPopup:show("You seem to be offline. You can still play previously downloaded levels, but not download any new ones.")
 end
 
 function pushNewLevelMenu(title, levels)
-	menuStack:push("levellist", {
+	menu:push("levellist", {
 		title = title,
 		offset = 0,
 		list = levels,
 	})
 end
 
+function pushMainMenu()
+	menu:push("main", {})
+end
+
 function startLevelRequest(url)
-	LevelRequest = HSHttpRequest(url)
+	LevelRequest = knHttpRequest(url)
 	if LevelRequest then
 		waitMgr:start("Downloading level...")
 	else
@@ -409,27 +419,27 @@ end
 
 function updateLevelRequest()
 	if LevelRequest then
-		local status = HSHttpUpdate(LevelRequest)
+		local status = knHttpUpdate(LevelRequest)
 		
-		if status == HS_HTTP_PENDING then
+		if status == KN_HTTP_PENDING then
 			-- nop
-		elseif status == HS_HTTP_DONE then
+		elseif status == KN_HTTP_DONE then
 			waitMgr:stop()
 			
-			HSMakeDir(HSGetInternalDataPath() .. "/saved")
-			local path = HSGetInternalDataPath() .. "/saved/" .. targetFile
-			local data = HSHttpData(LevelRequest)
-			HSWriteFile(path, data)
+			knMakeDir(knGetInternalDataPath() .. "/saved")
+			local path = knGetInternalDataPath() .. "/saved/" .. targetFile
+			local data = knHttpData(LevelRequest)
+			knWriteFile(path, data)
 			
-			HSLog(HS_LOG_INFO, "Wrote " .. path)
+			knLog(LOG_INFO, "Wrote " .. path)
 			
-			HSHttpRelease(LevelRequest)
+			knHttpRelease(LevelRequest)
 			LevelRequest = nil
 			
 			startLevel(targetFile)
-		elseif status == HS_HTTP_ERROR then
+		elseif status == KN_HTTP_ERROR then
 			errorPopup:show("Failed to request level")
-			HSHttpRelease(LevelRequest)
+			knHttpRelease(LevelRequest)
 			LevelRequest = nil
 			waitMgr:stop()
 		end
@@ -437,18 +447,21 @@ function updateLevelRequest()
 end
 
 function startLevel(filename)
-	local path = HSGetInternalDataPath() .. "/saved/" .. filename
+	local path = knGetInternalDataPath() .. "/saved/" .. filename
 	
-	HSOverlayUnmount()
-	HSOverlayMount(path)
+	knUnmountOverlay()
+	local success = knMountOverlay(path)
 	
-	HSLog(HS_LOG_INFO, "Mounted " .. path)
-	
-	mgCommand("level.start level:" .. levelToPlay)
+	if success then
+		knLog(LOG_INFO, "Mounted " .. path)
+		mgCommand("level.start level:" .. levelToPlay)
+	else
+		knLog(LOG_ERROR, "Failed to mount " .. path)
+	end
 end
 
 function handleCommand(cmd)
-	HSLog(HS_LOG_INFO, cmd)
+	knLog(LOG_INFO, cmd)
 	
 	if cmd == "load" then
 		load()
@@ -474,9 +487,9 @@ function handleCommand(cmd)
 	
 	if startsWith(cmd, "startLevelAtIndexFromCurrentOffset") then
 		status, message = pcall(function ()
-			local state = menuStack:getState()
+			local state = menu:getState()
 			
-			if menuStack:getType() == "levellist" then
+			if menu:getType() == "levellist" then
 				local index = state.offset + tonumber(getSecond(cmd))
 				
 				if index <= #state.list then
@@ -492,7 +505,7 @@ function handleCommand(cmd)
 					
 					-- If we've already downloaded the level, don't download it
 					-- again. Otherwise fetch it.
-					if HSIsFile(HSGetInternalDataPath() .. "/saved/" .. targetFile) then
+					if knIsFile(knGetInternalDataPath() .. "/saved/" .. targetFile) then
 						startLevel(targetFile)
 					else
 						startLevelRequest(info.url)
@@ -502,14 +515,14 @@ function handleCommand(cmd)
 		end)
 		
 		if not status then
-			HSLog(HS_LOG_ERROR, message)
+			knLog(LOG_ERROR, message)
 		end
 	end
 	
 	if startsWith(cmd, "addOffset") then
-		local state = menuStack:getState()
+		local state = menu:getState()
 		
-		if menuStack:getType() == "levellist" then
+		if menu:getType() == "levellist" then
 			state.offset = state.offset + tonumber(getSecond(cmd))
 			
 			if state.offset > #state.list then
@@ -519,9 +532,9 @@ function handleCommand(cmd)
 	end
 	
 	if startsWith(cmd, "subOffset") then
-		local state = menuStack:getState()
+		local state = menu:getState()
 		
-		if menuStack:getType() == "levellist" then
+		if menu:getType() == "levellist" then
 			state.offset = state.offset - tonumber(getSecond(cmd))
 			
 			if state.offset < 0 then
@@ -554,4 +567,4 @@ function MenuStack()
 	}
 end
 
-menuStack = MenuStack()
+menu = MenuStack()
