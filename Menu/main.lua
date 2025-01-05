@@ -11,8 +11,9 @@ HOSTNAME = "192.168.1.128:5000"
 waiting = false
 waitingReason = ""
 loadingFrame = 0
-levelToPlay = ""
-targetFile = ""
+-- levelToPlay = ""
+-- targetFile = ""
+targetLevel = nil
 listRequestType = "featured"
 
 waitMgr = {
@@ -23,6 +24,9 @@ waitMgr = {
 	stop = function (self)
 		waiting = false
 		waitingReason = ""
+	end,
+	isWaiting = function (self)
+		return waiting
 	end
 }
 
@@ -35,6 +39,9 @@ errorPopup = {
 	end,
 	hide = function (self)
 		self.showing = false
+	end,
+	isShowing = function (self)
+		return self.showing
 	end,
 	draw = function (self)
 		if self.showing then
@@ -229,9 +236,7 @@ function drawWorld2()
 			
 			textY = textY + 240
 		end
-	end
-	
-	if t == "options" then
+	elseif t == "options" then
 		mgSetAlpha(optionsButton, 1)
 		mgDraw(optionsButton)
 		
@@ -280,6 +285,8 @@ function drawWorld2()
 			mgDraw(optionsSnd)
 			mgPopCanvas()
 		end
+	else
+		menu:draw()
 	end
 	
 	if menu:depth() >= 2 then
@@ -418,8 +425,8 @@ function pushMainMenu()
 	menu:push("main", {})
 end
 
-function startLevelRequest(url)
-	LevelRequest = knHttpRequest(url)
+function startLevelRequest(info)
+	LevelRequest = knHttpRequest(info.url)
 	if LevelRequest then
 		waitMgr:start("Downloading level...")
 	else
@@ -437,7 +444,7 @@ function updateLevelRequest()
 			waitMgr:stop()
 			
 			knMakeDir(knGetInternalDataPath() .. "/saved")
-			local path = knGetInternalDataPath() .. "/saved/" .. targetFile
+			local path = knGetInternalDataPath() .. "/saved/" .. targetLevel.filename
 			local data = knHttpData(LevelRequest)
 			knWriteFile(path, data)
 			
@@ -446,7 +453,7 @@ function updateLevelRequest()
 			knHttpRelease(LevelRequest)
 			LevelRequest = nil
 			
-			startLevel(targetFile)
+			startLevel(targetLevel)
 		elseif status == KN_HTTP_ERROR then
 			errorPopup:show("Failed to request level")
 			knHttpRelease(LevelRequest)
@@ -456,8 +463,21 @@ function updateLevelRequest()
 	end
 end
 
-function startLevel(filename)
-	local path = knGetInternalDataPath() .. "/saved/" .. filename
+function startLevel(info)
+	-- Various fixups for old database versions
+	info.start_balls = tonumber(info.start_balls)
+	info.start_streak = tonumber(info.start_streak)
+	
+	if info.start_balls == 0 then
+		info.start_balls = 25
+	end
+	
+	if info.level == "*NONE*" then
+		info.level = string.lower(info.name)
+	end
+	
+	-- Actually mount and load the level
+	local path = knGetInternalDataPath() .. "/saved/" .. info.filename
 	
 	knUnmountOverlay()
 	local success = knMountOverlay(path)
@@ -465,17 +485,39 @@ function startLevel(filename)
 	if success then
 		knLog(LOG_INFO, "Mounted " .. path)
 		knLoadTemplates()
-		mgCommand("level.start level:" .. levelToPlay)
+		knSetPlayerZeroState(info.start_balls, info.start_streak)
+		mgCommand("level.start level:" .. info.level)
 	else
 		knLog(LOG_ERROR, "Failed to mount " .. path)
 	end
 end
 
-function handleCommand(cmd)
+function handleCommand2(cmd)
 	knLog(LOG_INFO, cmd)
 	
 	if cmd == "load" then
 		load()
+	end
+	
+	if cmd == "popmenu" then
+		menu:pop()
+	end
+	
+	if cmd == "back" then
+		if waitMgr:isWaiting() then
+			-- do nothing
+		elseif errorPopup:isShowing() then
+			handleCommand("closeError")
+		elseif menu:depth() >= 2 then
+			handleCommand("popmenu")
+		else
+			mgCommand("game.quit")
+		end
+	end
+	
+	if cmd == "gameover" then
+		local newScore = tonumber(mgGet("level.score"))
+		local newTime = tonumber(mgGet("level.simtime"))
 	end
 	
 	if cmd == "closeError" then
@@ -506,20 +548,22 @@ function handleCommand(cmd)
 				if index <= #state.list then
 					local info = state.list[index]
 					
-					if info.level == "*NONE*" then
-						levelToPlay = string.lower(info.name)
-					else
-						levelToPlay = info.level
-					end
+					targetLevel = info
 					
-					targetFile = info.filename
+-- 					if info.level == "*NONE*" then
+-- 						levelToPlay = string.lower(info.name)
+-- 					else
+-- 						levelToPlay = info.level
+-- 					end
+					
+-- 					targetFile = info.filename
 					
 					-- If we've already downloaded the level, don't download it
 					-- again. Otherwise fetch it.
-					if knIsFile(knGetInternalDataPath() .. "/saved/" .. targetFile) then
-						startLevel(targetFile)
+					if knIsFile(knGetInternalDataPath() .. "/saved/" .. info.filename) then
+						startLevel(info)
 					else
-						startLevelRequest(info.url)
+						startLevelRequest(info)
 					end
 				end
 			end
@@ -555,17 +599,47 @@ function handleCommand(cmd)
 	end
 end
 
+function handleCommand(cmd)
+	local status, msg = pcall(function () handleCommand2(cmd) end)
+	
+	if not status then
+		knLog(LOG_ERROR, msg)
+	end
+end
+
 function MenuStack()
 	return {
 		items = {},
-		push = function (self, t, state)
+		push = function (self, t, state, onPush, onDraw, onPop)
 			self.items[#self.items + 1] = {
 				type = t,
 				state = state,
+				onPush = onPush,
+				onDraw = onDraw,
+				onPop = onPop,
 			}
+			
+			local obj = self.items[#self.items]
+			
+			if obj.onPush ~= nil then
+				obj:onPush()
+			end
 		end,
 		pop = function (self)
+			local obj = self.items[#self.items]
+			
+			if obj.onPop ~= nil then
+				obj:onPop()
+			end
+			
 			self.items[#self.items] = nil
+		end,
+		draw = function (self)
+			local obj = self.items[#self.items]
+			
+			if obj.onDraw ~= nil then
+				obj:onDraw()
+			end
 		end,
 		getState = function (self)
 			if #self.items == 0 then return end
