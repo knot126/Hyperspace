@@ -7,6 +7,7 @@ MODE_COOP = 5
 MODE_COUNT = 6
 
 HOSTNAME = "192.168.1.128:5000"
+NO_API = true
 
 waiting = false
 waitingReason = ""
@@ -316,7 +317,14 @@ function drawWorld()
 end
 
 function startLevelListRequest()
-	LevelListRequest = knHttpRequest("http://" .. HOSTNAME .. "/api/v1/levels/" .. listRequestType .. "?format=binary")
+	local url = "http://" .. HOSTNAME .. "/api/v1/levels/" .. listRequestType .. "?format=binary"
+	
+	if NO_API then
+		url = "http://" .. HOSTNAME .. "/" .. listRequestType .. ".bin"
+	end
+	
+	LevelListRequest = knHttpRequest(url)
+	
 	if LevelListRequest then
 		waitMgr:start("Getting " .. listRequestType .. " levels...")
 	else
@@ -549,14 +557,6 @@ function handleCommand2(cmd)
 					local info = state.list[index]
 					
 					targetLevel = info
-					
--- 					if info.level == "*NONE*" then
--- 						levelToPlay = string.lower(info.name)
--- 					else
--- 						levelToPlay = info.level
--- 					end
-					
--- 					targetFile = info.filename
 					
 					-- If we've already downloaded the level, don't download it
 					-- again. Otherwise fetch it.

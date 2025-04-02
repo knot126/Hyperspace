@@ -107,6 +107,13 @@ def buildIndex(name, *, limit=None, filter=None, sort_key=None, sort_reverse=Fal
 	Path(f"{name}.bin").write_bytes(encodeBinary(items))
 
 def main():
+	# URL format (if not default)
+	try:
+		global URL_FORMAT
+		URL_FORMAT = Path("url.txt").read_text()
+	except:
+		pass
+	
 	# Featured levels
 	if not os.path.isfile("featured.txt"):
 		open("featured.txt", "w").close()
