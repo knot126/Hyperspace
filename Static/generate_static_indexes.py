@@ -110,7 +110,7 @@ def main():
 	# URL format (if not default)
 	try:
 		global URL_FORMAT
-		URL_FORMAT = Path("url.txt").read_text()
+		URL_FORMAT = Path("url.txt").read_text().strip()
 	except:
 		pass
 	

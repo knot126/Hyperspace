@@ -6,14 +6,12 @@ MODE_VERSUS = 4
 MODE_COOP = 5
 MODE_COUNT = 6
 
-HOSTNAME = "192.168.1.128:5000"
-NO_API = true
+HOSTNAME = "192.168.1.243:5000"
+NO_API = false
 
 waiting = false
 waitingReason = ""
 loadingFrame = 0
--- levelToPlay = ""
--- targetFile = ""
 targetLevel = nil
 listRequestType = "featured"
 
@@ -35,6 +33,7 @@ errorPopup = {
 	showing = false,
 	message = "",
 	show = function (self, message)
+		knLog(LOG_ERROR, "Error Message: " .. message)
 		self.showing = true
 		self.message = message
 	end,
@@ -85,12 +84,48 @@ function initGlobals()
 	screenHeight = bottom - top
 end
 
-function init()
+splashes = {
+	"Woo!",
+	"Where are we dropping today, kids?",
+	"I'm cool, I hope",
+	"Uses tmpfile()!",
+	"Uses Leafhook!",
+	"Uses Leaf!"
+}
+
+function init2()
 	initGlobals()
 	
-	loadingBar = mgCreateImage("LoadingBar.png")
-	mgSetOrigo(loadingBar, "topleft")
-	mgSetPos(loadingBar, left + (0.333 * screenWidth), top)
+	clientIcon = mgCreateImage("Hyperspace.png")
+	mgSetScale(clientIcon, 0.14, 0.14)
+	mgSetOrigo(clientIcon, "center")
+	mgSetPos(clientIcon, centerX, top + 215)
+	
+	splashText = mgCreateText("lexend")
+	mgSetText(splashText, "asdf")
+	mgSetScale(splashText, 0.09, 0.09)
+	mgSetOrigo(splashText, "center")
+	mgSetPos(splashText, centerX-3, top+270)
+	
+	loadingDots = {}
+	for i=1,8 do
+		loadingDots[i] = mgCreateImage("loadingdot.png")
+		mgSetOrigo(loadingDots[i], "center")
+		mgSetScale(loadingDots[i], 0.1, 0.1)
+		mgSetPos(loadingDots[i], centerX+(i-4.5)*8, top+250.75)
+		mgSetAlpha(loadingDots[i], 0.1)
+	end
+	
+	loadingFrame = 0
+end
+
+function init()
+	local status, msg = pcall(init2)
+	
+	if not status then
+		knLog(LOG_ERROR, msg)
+		os.exit()
+	end
 end
 
 function load()
@@ -133,7 +168,6 @@ function load()
 	
 	levelListUi = mgCreateUi("levellistui.xml")
 	mgSetOrigo(levelListUi, "center")
--- 	mgSetScale(levelListUi, 1.5, 1.5)
 	mgSetScale(levelListUi, 0.75, 0.75)
 	mgSetPos(levelListUi, centerX, centerY)
 	
@@ -151,14 +185,40 @@ function load()
 	startLevelListRequest()
 end
 
+function firstDraw()
+	knInclude("common/request.lua")
+end
+
 function drawLoading()
--- 	initGlobals() -- not needed maybe??
+	initGlobals()
+	
+	local f = tonumber(mgGet("game.frame"))
+	local a = 1.0-(f-30)/60
+	if a < 0 then a = 0 end
+	if a > 1 then a = 1 end
+	
+	mgSetAlpha(clientIcon, a)
+	mgDraw(clientIcon)
+	
+	mgSetAlpha(splashText, a)
+	mgDraw(splashText)
+	
+	for i=1, 8 do
+		if loadingFrame==20+i*10 then 
+			mgSetAlpha(loadingDots[i], 1)
+		end
+		
+		local la = mgGetAlpha(loadingDots[i])
+		mgSetAlpha(loadingDots[i], la * a)
+		mgDraw(loadingDots[i])
+		mgSetAlpha(loadingDots[i], la)
+	end
+	
+	if loadingFrame < 8 then
+		mgFullScreenColor(0,0,0,1.0-loadingFrame/8.0)
+	end
 	
 	loadingFrame = loadingFrame + 1
-	
-	mgFullScreenColor(0, 0, 0, 1)
-	mgSetScale(loadingBar, (loadingFrame / 110 / 256) * (right - left) * (1/3), 1)
-	mgDraw(loadingBar)
 	
 	if loadingFrame == 110 then
 		mgCommand("audio.playBackgroundMusic music/menu.ogg")
@@ -177,17 +237,23 @@ function frame()
 end
 
 function process()
-	updateLevelRequest()
-	updateLevelListRequest()
+-- 	updateLevelRequest()
+-- 	updateLevelListRequest()
 end
 
 function drawWorld2()
 	if mgGet("game.loaded")=="0" then
 		drawLoading()
+		if loadingFrame == 1 then
+			firstDraw()
+		end
 		return
 	end
 	
--- 	mgFullScreenColor(0.5, 0.5, 0.5, 1.0)
+	if httpRequestDispatcher ~= nil then
+		httpRequestDispatcher:update()
+	end
+	
 	mgDraw(bgImage)
 	
 	pcall(process)
@@ -313,27 +379,27 @@ function drawWorld()
 	
 	if not status then
 		knLog(LOG_ERROR, msg)
+		os.exit()
 	end
 end
 
-function startLevelListRequest()
-	local url = "http://" .. HOSTNAME .. "/api/v1/levels/" .. listRequestType .. "?format=binary"
+function startLevelListRequest(type)
+	waitMgr:start("Getting " .. type .. " levels...")
+	
+	local url = "http://" .. HOSTNAME .. "/api/v1/levels/" .. type .. "?format=binary"
 	
 	if NO_API then
-		url = "http://" .. HOSTNAME .. "/" .. listRequestType .. ".bin"
+		url = "http://" .. HOSTNAME .. "/" .. type .. ".bin"
 	end
 	
-	LevelListRequest = knHttpRequest(url)
-	
-	if LevelListRequest then
-		waitMgr:start("Getting " .. listRequestType .. " levels...")
-	else
-		if hasCachedLevelList() then
-			loadOfflineLevelMenu()
+	httpGet(url, function (response)
+		if response.success then
+			
 		else
-			errorPopup:show("Failed to create connection")
+			loadOfflineLevelMenu()
+			waitMgr:stop()
 		end
-	end
+	end)
 end
 
 function updateLevelListRequest()
@@ -433,42 +499,26 @@ function pushMainMenu()
 	menu:push("main", {})
 end
 
-function startLevelRequest(info)
-	LevelRequest = knHttpRequest(info.url)
-	if LevelRequest then
-		waitMgr:start("Downloading level...")
-	else
-		errorPopup:show("Failed to connect to server. Try again.")
-	end
-end
-
-function updateLevelRequest()
-	if LevelRequest then
-		local status = knHttpUpdate(LevelRequest)
-		
-		if status == KN_HTTP_PENDING then
-			-- nop
-		elseif status == KN_HTTP_DONE then
+function downloadAndStart(info)
+	waitMgr:start("Getting " .. type .. " levels...")
+	
+	httpGet(info.url, function (response)
+		if response.success then
 			waitMgr:stop()
 			
 			knMakeDir(knGetInternalDataPath() .. "/saved")
-			local path = knGetInternalDataPath() .. "/saved/" .. targetLevel.filename
-			local data = knHttpData(LevelRequest)
+			local path = knGetInternalDataPath() .. "/saved/" .. info.filename
+			local data = response:getData()
 			knWriteFile(path, data)
 			
 			knLog(LOG_INFO, "Wrote " .. path)
 			
-			knHttpRelease(LevelRequest)
-			LevelRequest = nil
-			
-			startLevel(targetLevel)
-		elseif status == KN_HTTP_ERROR then
+			startLevel(info)
+		else
 			errorPopup:show("Failed to request level")
-			knHttpRelease(LevelRequest)
-			LevelRequest = nil
 			waitMgr:stop()
 		end
-	end
+	end)
 end
 
 function startLevel(info)
@@ -505,6 +555,10 @@ function handleCommand2(cmd)
 	
 	if cmd == "load" then
 		load()
+	end
+	
+	if getFirst(cmd) == "call" then
+		_G[getSecond(cmd)]()
 	end
 	
 	if cmd == "popmenu" then
@@ -563,7 +617,7 @@ function handleCommand2(cmd)
 					if knIsFile(knGetInternalDataPath() .. "/saved/" .. info.filename) then
 						startLevel(info)
 					else
-						startLevelRequest(info)
+						downloadAndStart(info)
 					end
 				end
 			end
